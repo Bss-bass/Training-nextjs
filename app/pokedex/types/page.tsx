@@ -1,46 +1,23 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
 import Link from "next/link";
-import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
+import { useFavorites } from '@/lib/context/FavoritesContext';
 import Image from "next/image";
 import { Button, TextField, Card } from "@mui/material";
-
-type TypeItem = {
-    name: string;
-    url: string;
-};
-
-type TypePokemonDetail = {
-    pokemon: { pokemon: { name: string; url: string } }[];
-};
+import { useTypesList, useTypeDetail } from "../hooks/usePokemon";
+import type { TypePokemonDetail } from "../hooks/usePokemon";
 
 export default function TypesPage() {
     const artworkUrl = process.env.NEXT_PUBLIC_ARTWORK_URL || "";
     const [selected, setSelected] = useState<string | null>('normal');
     const [query, setQuery] = useState("");
 
-    const typesQuery = useQuery<{ results: TypeItem[] }, Error>({
-        queryKey: ['types'],
-        queryFn: async () => {
-            const res = await api.get('/type');
-            return res.data as { results: TypeItem[] };
-        },
-    });
+    const typesQuery = useTypesList();
 
-    const typeQuery = useQuery<TypePokemonDetail, Error>({
-        queryKey: ['type', selected],
-        queryFn: async () => {
-            if (!selected) throw new Error('no type');
-            const res = await api.get(`/type/${selected}`);
-            return res.data;
-        },
-        enabled: !!selected,
-    });
-    const favorites = useFavorites((s: FavoritesState) => s.favorites);
-    const toggleFavorite = useFavorites((s: FavoritesState) => s.toggle);
+    const typeQuery = useTypeDetail(selected);
+
+    const { favorites, toggle } = useFavorites();
 
     const types = typesQuery.data?.results ?? [];
     const typePokemon = typeQuery.data ?? null;
@@ -54,6 +31,11 @@ export default function TypesPage() {
         );
         return { pokemon: filtered } as TypePokemonDetail;
     }, [query, typePokemon]);
+
+    const getIdFromUrl = (url: string) => {
+        const parts = url.split('/').filter(Boolean);
+        return parts[parts.length - 1];
+    }
 
     return (
         <div className="min-h-screen p-6">
@@ -82,9 +64,10 @@ export default function TypesPage() {
                                 ) : (
                                     filteredTypePokemon?.pokemon.map((pItem) => {
                                         const p = pItem.pokemon;
-                                        const id = p.url.split('/').filter(Boolean).pop();
-                                        const img = id ? `${artworkUrl}/${id}.png` : undefined;
-                                        const inTeam = favorites.includes(p.name);
+                                        const id = getIdFromUrl(p.url);
+                                        const numericId = id ? Number(id) : undefined;
+                                        const img = numericId ? `${artworkUrl}/${numericId}.png` : undefined;
+                                        const inTeam = numericId ? favorites.includes(numericId) : false;
                                         return (
                                             <Card key={p.name} className={`capitalize bg-white/60 p-2 rounded ${inTeam ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
                                                 <div className="flex items-center gap-2">
@@ -96,11 +79,11 @@ export default function TypesPage() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1">
-                                                        <Link href={`/pokedex/dex/${p.name}`} className="block font-medium hover:underline">{p.name}</Link>
+                                                        <Link href={`/pokedex/dex/${numericId}`} className="block font-medium hover:underline">{p.name}</Link>
                                                         <div className="text-sm text-slate-600">{inTeam ? <span className="text-emerald-600 font-semibold">In Team</span> : <span className="text-slate-500">Not in team</span>}</div>
                                                     </div>
                                                     <div>
-                                                        <Button onClick={() => toggleFavorite(p.name)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
+                                                        <Button onClick={() => numericId && toggle(numericId)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
                                                     </div>
                                                 </div>
                                             </Card>

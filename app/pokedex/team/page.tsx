@@ -2,7 +2,7 @@
 import { useQueries } from '@tanstack/react-query';
 import api from '@/lib/api';
 import Link from "next/link";
-import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
+import { useFavorites } from '@/lib/context/FavoritesContext';
 import { Card, Button } from "@mui/material";
 import Image from "next/image";
 
@@ -15,25 +15,24 @@ type MiniPokemon = {
 
 export default function TeamPage() {
 
-    const favNames = useFavorites((s: FavoritesState) => s.favorites);
-    const removeFromStore = useFavorites((s: FavoritesState) => s.remove);
+    const { favorites: favIds, remove } = useFavorites();
 
     const queries = useQueries({
-        queries: favNames.map((name: string) => ({
-            queryKey: ['pokemon', name],
+        queries: favIds.map((id: number) => ({
+            queryKey: ['pokemon', id],
             queryFn: async () => {
-                const res = await api.get(`/pokemon/${name}`);
+                const res = await api.get(`/pokemon/${id}`);
                 return res.data as MiniPokemon;
             },
-            enabled: !!name,
+            enabled: !!id,
         })),
     });
 
     const favorites = queries.map((q) => q.data).filter(Boolean) as MiniPokemon[];
     const loading = queries.some((q) => q.isLoading);
 
-    function remove(name: string) {
-        removeFromStore(name);
+    function removeId(id: number) {
+        remove(id);
     }
 
     return (
@@ -60,7 +59,7 @@ export default function TeamPage() {
                                 </Link>
 
                                 <Button
-                                    onClick={() => remove(f.name)}
+                                    onClick={() => removeId(f.id)}
                                     variant="contained"
                                     color='error'
                                 >

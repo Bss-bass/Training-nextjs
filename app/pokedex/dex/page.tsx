@@ -1,12 +1,11 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
 import Link from "next/link";
 import { Button, TextField, Card } from "@mui/material";
-import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
+import { useFavorites } from '@/lib/context/FavoritesContext';
 import Image from "next/image";
+import { usePokemonList } from "../hooks/usePokemon";
 
 type ListResult = {
     name: string;
@@ -19,14 +18,7 @@ export default function Page() {
     const [limit] = useState(20);
     const [query, setQuery] = useState("");
 
-    const listQuery = useQuery<{ count: number; results: ListResult[] }, Error>({
-        queryKey: ['pokemon-list', page, limit],
-        queryFn: async () => {
-            const offset = page * limit;
-            const res = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
-            return res.data as { count: number; results: ListResult[] };
-        },
-    });
+    const listQuery = usePokemonList(page, limit);
 
     const loading = listQuery.isLoading;
     const itemsData = useMemo(() => listQuery.data?.results ?? [], [listQuery.data]);
@@ -58,8 +50,7 @@ export default function Page() {
         }
     };
 
-    const favorites = useFavorites((s: FavoritesState) => s.favorites);
-    const toggleFavorite = useFavorites((s: FavoritesState) => s.toggle);
+    const { favorites, toggle } = useFavorites();
 
     return (
         <div className="min-h-screen p-6">
@@ -85,10 +76,11 @@ export default function Page() {
                     <ul className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                         {filtered.map((p) => {
                             const id = getIdFromUrl(p.url);
-                            const img = id ? `${artworkUrl}/${id}.png` : undefined;
-                            const inTeam = favorites.includes(p.name);
+                            const numericId = id ? Number(id) : undefined;
+                            const img = numericId ? `${artworkUrl}/${numericId}.png` : undefined;
+                            const inTeam = numericId ? favorites.includes(numericId) : false;
                             return (
-                                <Card key={p.name} className={`bg-white/60 p-3 rounded shadow flex items-center gap-3 ${favorites.includes(p.name) ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
+                                <Card key={p.name} className={`bg-white/60 p-3 rounded shadow flex items-center gap-3 ${inTeam ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
                                     <div className="w-16 h-16 shrink-0">
                                         {img ? (
                                             <Image src={img} alt={p.name} width={64} height={64} className="mx-auto" />
@@ -97,11 +89,11 @@ export default function Page() {
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <Link href={`/pokedex/dex/${p.name}`} className="capitalize font-medium block hover:underline">{p.name}</Link>
+                                        <Link href={`/pokedex/dex/${getIdFromUrl(p.url)}`} className="capitalize font-medium block hover:underline">{p.name}</Link>
                                         <div className="text-sm text-gray-500 mt-1">{inTeam ? <span className="text-emerald-600 font-semibold">In Team</span> : <span className="text-slate-500">Not in team</span>}</div>
                                     </div>
                                     <div>
-                                        <Button onClick={() => toggleFavorite(p.name)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
+                                        <Button onClick={() => numericId && toggle(numericId)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
                                     </div>
                                 </Card>
                             );

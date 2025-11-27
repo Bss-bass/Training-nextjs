@@ -1,40 +1,15 @@
 "use client";
 
-import { useQuery } from '@tanstack/react-query';
-import api from '@/lib/api';
 import Link from "next/link";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Image from "next/image";
 import { Button } from '@mui/material';
 import ShuffleIcon from '@mui/icons-material/Shuffle';
-
-type MiniPokemon = {
-    id: number;
-    name: string;
-    sprites: { front_default: string | null };
-    types: { slot: number; type: { name: string } }[];
-};
-
-function randomIds(count: number, max = 1025) {
-    const set = new Set<number>();
-    while (set.size < count) {
-        const id = Math.floor(Math.random() * max) + 1;
-        set.add(id);
-    }
-    return Array.from(set);
-}
+import { useExamplesQuery } from './hooks/usePokemon';
 
 export default function Page() {
-    const examplesQuery = useQuery<MiniPokemon[], Error>({
-        queryKey: ['random-examples'],
-        queryFn: async () => {
-            const ids = randomIds(3, 1025);
-            const requests = ids.map((id) => api.get(`/pokemon/${id}`).then((r) => r.data as MiniPokemon));
-            const results = await Promise.all(requests);
-            return results;
-        },
-    });
+    const examplesQuery = useExamplesQuery(3);
 
     const examples = examplesQuery.data ?? null;
     const loading = examplesQuery.isLoading;
@@ -80,7 +55,7 @@ export default function Page() {
                                         <div className="capitalize font-medium">{p.name}</div>
                                         <div className="text-sm text-slate-600 mt-1 mb-2">{p.types.map((t) => t.type.name).join(', ')}</div>
                                         <Button variant='outlined' color="info">
-                                            <Link href={`/pokedex/dex/${p.name}`}>View</Link>
+                                            <Link href={`/pokedex/dex/${p.id}`}>View</Link>
                                         </Button>
                                     </article>
                                 ))}

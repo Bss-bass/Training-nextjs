@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 
 type Pokemon = {
+    name: string;
     abilities: Array<{
         ability: {
             name: string;
@@ -127,20 +128,36 @@ type Pokemon = {
     weight: number;
 };
 
-export function usePokemon(name?: string | null) {
+type MiniPokemon = {
+    id: number;
+    name: string;
+    sprites: { front_default: string | null };
+    types: { slot: number; type: { name: string } }[];
+};
+
+type TypeItem = {
+    name: string;
+    url: string;
+};
+
+type TypePokemonDetail = {
+    pokemon: { pokemon: { name: string; url: string } }[];
+};
+
+export function usePokemon(id?: string | null) {
     const query = useQuery<Pokemon, Error>({
-        queryKey: ['pokemon', name],
+        queryKey: ['pokemon', id],
         queryFn: async () => {
-            if (!name) throw new Error('No name');
-            const res = await api.get(`/pokemon/${name}`);
+            if (!id) throw new Error('No id');
+            const res = await api.get(`/pokemon/${id}`);
             return res.data as Pokemon;
         },
-        enabled: !!name,
+        enabled: !!id,
     });
 
     const displayName = useMemo(() => {
-        return query.data?.species?.name ?? name ?? '';
-    }, [query.data, name]);
+        return query.data?.species?.name ?? id ?? '';
+    }, [query.data, id]);
 
     return {
         data: query.data ?? null,
@@ -151,4 +168,59 @@ export function usePokemon(name?: string | null) {
     } as const;
 }
 
-export type { Pokemon };
+function randomIds(count: number, max = 1025) {
+    const set = new Set<number>();
+    while (set.size < count) {
+        const id = Math.floor(Math.random() * max) + 1;
+        set.add(id);
+    }
+    return Array.from(set);
+}
+
+export function useExamplesQuery(numberOfExamples: number) {
+    return useQuery<Pokemon[], Error>({
+        queryKey: ['pokemon-examples', numberOfExamples],
+        queryFn: async () => {
+            const ids = randomIds(numberOfExamples, 1025);
+            const requests = ids.map((id) => api.get(`/pokemon/${id}`).then((r) => r.data as Pokemon));
+            const results = await Promise.all(requests);
+            return results;
+        },
+        enabled: numberOfExamples > 0,
+    });
+}
+
+export function usePokemonList(page: number, limit: number) {
+    return useQuery<{ count: number; results: { name: string; url: string }[] }, Error>({
+        queryKey: ['pokemon-list', page, limit],
+        queryFn: async () => {
+            const offset = page * limit;
+            const res = await api.get(`/pokemon?limit=${limit}&offset=${offset}`);
+            return res.data as { count: number; results: { name: string; url: string }[] };
+        },
+    });
+}
+
+export function useTypesList() {
+    return useQuery<{ results: TypeItem[] }, Error>({
+        queryKey: ['types'],
+        queryFn: async () => {
+            const res = await api.get('/type');
+            return res.data as { results: TypeItem[] };
+        },
+    });
+}
+
+export function useTypeDetail(typeName: string | null) {
+    return useQuery<TypePokemonDetail, Error>({
+        queryKey: ['type', typeName],
+        queryFn: async () => {
+            if (!typeName) throw new Error('no type');
+            const res = await api.get(`/type/${typeName}`);
+            return res.data as TypePokemonDetail;
+        },
+        enabled: !!typeName,
+    });
+}
+
+export type { Pokemon, TypeItem, TypePokemonDetail, MiniPokemon };

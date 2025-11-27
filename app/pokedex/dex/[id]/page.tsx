@@ -3,23 +3,23 @@
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
 import { usePokemon } from "../../hooks/usePokemon";
-import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
+import { useFavorites } from '@/lib/context/FavoritesContext';
 import Image from "next/image";
 import { Card, Button } from "@mui/material";
 
 export default function DetailPokemonPage() {
-    const params = useParams<{ name: string }>();
-    const name = params.name;
+    const params = useParams<{ id: string }>();
+    const id = params.id;
 
-    const { data: pokemonData, loading, error, refetch, displayName } = usePokemon(name);
+    const { data: pokemonData, loading, error, refetch, displayName } = usePokemon(id);
+
+    const { favorites, toggle } = useFavorites();
 
     const handleRefetch = useCallback(() => {
         refetch();
     }, [refetch]);
 
-    const favorites = useFavorites((s: FavoritesState) => s.favorites);
-    const toggleFavorite = useFavorites((s: FavoritesState) => s.toggle);
-    const isFav = name ? favorites.includes(name) : false;
+    const isFav = pokemonData ? favorites.includes(pokemonData.id) : false;
 
     return (
         <div className="flex flex-col items-center justify-start min-h-screen py-8 px-4">
@@ -36,7 +36,7 @@ export default function DetailPokemonPage() {
                     <div className="flex flex-col items-center">
                         <div className="flex items-center gap-4">
                             <h1 className="text-4xl font-bold capitalize">{displayName}</h1>
-                            <Button onClick={() => name && toggleFavorite(name)} variant='contained' color={isFav ? 'error' : 'success'}>
+                            <Button onClick={() => pokemonData && toggle(pokemonData.id)} variant='contained' color={isFav ? 'error' : 'success'}>
                                 {isFav ? 'Remove from Team' : 'Add to Team'}
                             </Button>
                         </div>

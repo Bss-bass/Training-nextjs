@@ -32,7 +32,7 @@ export default function LabelBottomNavigation() {
   return (
     <>
       <nav className='top-0 left-0 right-0 border-b shadow-md fixed'>
-        <BottomNavigation value={currentValue()} onChange={handleChange} className="bg-blue-500!" sx={{ minHeight: 70}}>
+        <BottomNavigation value={currentValue()} onChange={handleChange} sx={{ minHeight: 70, bgcolor: 'var(--color-blue-500)' }}>
           <BottomNavigationAction
             label="Home"
             value=""
