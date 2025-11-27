@@ -4,10 +4,9 @@ import { useMemo, useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import Link from "next/link";
-import { Card } from "@/app/component/ui/card";
-import { Input } from "@/app/component/ui/input";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
+import { Button, TextField, Card } from "@mui/material";
 
 type TypeItem = {
     name: string;
@@ -76,8 +75,8 @@ export default function TypesPage() {
                     {loading && <p>Loading...</p>}
                     {!loading && typePokemon && (
                         <>
-                            <Input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" className="mb-3" />
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <TextField  value={query} onChange={(e) => setQuery(e.target.value)} label="Search by name" sx={{ minWidth: 400 }} />
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
                                 {filteredTypePokemon?.pokemon.length === 0 ? (
                                     <p className="text-gray-500 text-sm">No Pokémon found for this type.</p>
                                 ) : (
@@ -97,11 +96,11 @@ export default function TypesPage() {
                                                         )}
                                                     </div>
                                                     <div className="flex-1">
-                                                        <Link href={`/pokedex/dex/${p.name}`} className="block font-medium">{p.name}</Link>
+                                                        <Link href={`/pokedex/dex/${p.name}`} className="block font-medium hover:underline">{p.name}</Link>
                                                         <div className="text-sm text-slate-600">{inTeam ? <span className="text-emerald-600 font-semibold">In Team</span> : <span className="text-slate-500">Not in team</span>}</div>
                                                     </div>
                                                     <div>
-                                                        <button onClick={() => toggleFavorite(p.name)} className="px-2 py-1 rounded bg-slate-200 cursor-pointer hover:bg-slate-300">{inTeam ? 'Remove' : 'Add'}</button>
+                                                        <Button onClick={() => toggleFavorite(p.name)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
                                                     </div>
                                                 </div>
                                             </Card>

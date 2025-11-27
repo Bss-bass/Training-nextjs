@@ -3,7 +3,7 @@ import { useQueries } from '@tanstack/react-query';
 import api from '@/lib/api';
 import Link from "next/link";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
-import { Card } from "@/app/component/ui/card";
+import { Card, Button } from "@mui/material";
 import Image from "next/image";
 
 type MiniPokemon = {
@@ -48,8 +48,8 @@ export default function TeamPage() {
                 <ul className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {favorites.map((f) => (
                         <li key={f.name}>
-                            <Card className="p-6">
-                                <Link href={`/pokedex/dex/${f.name}`} className="capitalize block">
+                            <Card className="p-6 flex flex-col items-center gap-4">
+                                <Link href={`/pokedex/dex/${f.name}`} className="capitalize block hover:underline">
                                     <span className="text-lg font-medium text-center block">{f.name}</span>
 
                                     {f.sprites.front_default && (
@@ -59,12 +59,13 @@ export default function TeamPage() {
                                     <div className="text-sm text-slate-600 mt-2 text-center">{f.types.map((t) => t.type.name).join(', ')}</div>
                                 </Link>
 
-                                <button
+                                <Button
                                     onClick={() => remove(f.name)}
-                                    className="mt-2 px-2 py-1 bg-red-500 text-white rounded"
+                                    variant="contained"
+                                    color='error'
                                 >
                                     Remove
-                                </button>
+                                </Button>
                             </Card>
                         </li>
                     ))}

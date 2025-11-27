@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import Link from "next/link";
-import { Input } from "@/app/component/ui/input";
+import { Button, TextField, Card } from "@mui/material";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
 
@@ -64,12 +64,18 @@ export default function Page() {
     return (
         <div className="min-h-screen p-6">
             <h1 className="text-3xl font-bold mb-4">Pokédex</h1>
-            <div className="mb-4 flex gap-2">
-                <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" />
-                <Link href="/pokedex/types" className="px-3 py-2 rounded bg-sky-500 text-white">Types</Link>
-                <Link href="/pokedex/team" className="px-3 py-2 rounded bg-emerald-500 text-white">Team</Link>
+            <div className="mb-4 flex items-center justify-between">
+                <TextField id="outlined-basic" label="Search by name" variant="outlined" value={query} onChange={(e) => setQuery(e.target.value)} sx={{ minWidth: 400 }} />
+                <div className="flex gap-2">
+                    <Button variant="contained" color="secondary">
+                        <Link href="/pokedex/types">Types</Link>
+                    </Button>
+                    <Button variant="contained" color="success">
+                        <Link href="/pokedex/team">Team</Link>
+                    </Button>
+                </div>
             </div>
-            <p className="mb-2">Total Pokémon: {totalCount}</p>
+            <p className="mb-2 flex justify-end">Total Pokémon: {totalCount}</p>
 
             {loading ? (
                 <p>Loading...</p>
@@ -82,7 +88,7 @@ export default function Page() {
                             const img = id ? `${artworkUrl}/${id}.png` : undefined;
                             const inTeam = favorites.includes(p.name);
                             return (
-                                <li key={p.name} className={`bg-white/60 p-3 rounded shadow flex items-center gap-3 ${favorites.includes(p.name) ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
+                                <Card key={p.name} className={`bg-white/60 p-3 rounded shadow flex items-center gap-3 ${favorites.includes(p.name) ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
                                     <div className="w-16 h-16 shrink-0">
                                         {img ? (
                                             <Image src={img} alt={p.name} width={64} height={64} className="mx-auto" />
@@ -91,13 +97,13 @@ export default function Page() {
                                         )}
                                     </div>
                                     <div className="flex-1">
-                                        <Link href={`/pokedex/dex/${p.name}`} className="capitalize font-medium block">{p.name}</Link>
+                                        <Link href={`/pokedex/dex/${p.name}`} className="capitalize font-medium block hover:underline">{p.name}</Link>
                                         <div className="text-sm text-gray-500 mt-1">{inTeam ? <span className="text-emerald-600 font-semibold">In Team</span> : <span className="text-slate-500">Not in team</span>}</div>
                                     </div>
                                     <div>
-                                        <button onClick={() => toggleFavorite(p.name)} className="px-2 py-1 rounded bg-slate-200 cursor-pointer hover:bg-slate-300">{inTeam ? 'Remove' : 'Add'}</button>
+                                        <Button onClick={() => toggleFavorite(p.name)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
                                     </div>
-                                </li>
+                                </Card>
                             );
                         })}
                     </ul>
@@ -105,9 +111,9 @@ export default function Page() {
             )}
 
             <div className="flex gap-2 mt-6 justify-center">
-                <button onClick={prevPage} className="px-3 py-1 bg-slate-200 rounded cursor-pointer hover:bg-slate-300">Prev</button>
+                <Button onClick={prevPage} variant="contained">Prev</Button>
                 <span className="px-3 py-1">Page {page + 1}</span>
-                <button onClick={nextPage} className="px-3 py-1 bg-slate-200 rounded cursor-pointer hover:bg-slate-300">Next</button>
+                <Button onClick={nextPage} variant="contained">Next</Button>
             </div>
         </div>
     );
