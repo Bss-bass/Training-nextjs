@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Faculty {
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  code     String     @unique
+  professors Professor[]
+  students   Student[]
+}
+
+model Professor {
+  id         Int      @id @default(autoincrement())
+  first_name String
+  last_name  String
+
+  facultyId  Int?
+  faculty    Faculty? @relation(fields: [facultyId], references: [id])
+
+  sections   Section[]
+}
+
+model Course {
+  id         Int      @id @default(autoincrement())
+  course_code String  @unique
+  course_name String
+  credits     Int
+  sections    Section[]
+}
+
+enum DayOfWeek {
+  MON
+  TUE
+  WED
+  THU
+  FRI
+}
+
+
+model Section {
+  id             Int       @id @default(autoincrement())
+
+  courseId       Int
+  course         Course    @relation(fields: [courseId], references: [id])
+
+  section_number String
+  semester       String
+
+  professorId    Int?
+  professor      Professor? @relation(fields: [professorId], references: [id])
+
+  day_of_week    DayOfWeek
+  start_time     DateTime
+  end_time       DateTime
+  capacity       Int        @default(60)
+
+  students       Student[]  @relation("Enrollments")
+}
+
+model Student {
+  id                Int         @id @default(autoincrement())
+  student_id        String      @unique
+  first_name        String
+  last_name         String
+
+  facultyId         Int
+  faculty           Faculty     @relation(fields: [facultyId], references: [id])
+
+  enrolled_sections Section[]   @relation("Enrollments")
+
+  profile           StudentProfile?
+}
+
+model StudentProfile {
+  studentId   Int   @id
+  student     Student @relation(fields: [studentId], references: [id])
+
+  email       String @unique
+  phone_number String?
+  address      String?
+}
+
