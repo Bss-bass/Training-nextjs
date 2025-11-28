@@ -1,6 +1,5 @@
 "use client";
-import { useQueries } from '@tanstack/react-query';
-import api from '@/lib/api';
+import { usePokemonMultiple } from '../hooks/usePokemon';
 import Link from "next/link";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import { Card, Button } from "@mui/material";
@@ -18,16 +17,7 @@ export default function TeamPage() {
     const favIds = useFavorites((s: FavoritesState) => s.favorites);
     const remove = useFavorites((s: FavoritesState) => s.remove);
 
-    const queries = useQueries({
-        queries: favIds.map((id: number) => ({
-            queryKey: ['pokemon', id],
-            queryFn: async () => {
-                const res = await api.get(`/pokemon/${id}`);
-                return res.data as MiniPokemon;
-            },
-            enabled: !!id,
-        })),
-    });
+    const queries = usePokemonMultiple(favIds);
 
     const favorites = queries.map((q) => q.data).filter(Boolean) as MiniPokemon[];
     const loading = queries.some((q) => q.isLoading);

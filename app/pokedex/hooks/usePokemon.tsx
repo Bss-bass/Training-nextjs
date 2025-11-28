@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import api from '@/lib/api';
 
 type Pokemon = {
@@ -220,6 +220,19 @@ export function useTypeDetail(typeName: string | null) {
             return res.data as TypePokemonDetail;
         },
         enabled: !!typeName,
+    });
+}
+
+export function usePokemonMultiple(ids: number[]) {
+    return useQueries({
+        queries: ids.map((id: number) => ({
+            queryKey: ['pokemon', id],
+            queryFn: async () => {
+                const res = await api.get(`/pokemon/${id}`);
+                return res.data as Pokemon;
+            },
+            enabled: !!id,
+        })),
     });
 }
 
