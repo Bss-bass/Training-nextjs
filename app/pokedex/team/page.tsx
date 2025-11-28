@@ -2,7 +2,7 @@
 import { useQueries } from '@tanstack/react-query';
 import api from '@/lib/api';
 import Link from "next/link";
-import { useFavorites } from '@/lib/context/FavoritesContext';
+import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import { Card, Button } from "@mui/material";
 import Image from "next/image";
 
@@ -15,7 +15,8 @@ type MiniPokemon = {
 
 export default function TeamPage() {
 
-    const { favorites: favIds, remove } = useFavorites();
+    const favIds = useFavorites((s: FavoritesState) => s.favorites);
+    const remove = useFavorites((s: FavoritesState) => s.remove);
 
     const queries = useQueries({
         queries: favIds.map((id: number) => ({

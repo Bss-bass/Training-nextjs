@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useCallback } from "react";
 import { usePokemon } from "../../hooks/usePokemon";
-import { useFavorites } from '@/lib/context/FavoritesContext';
+import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
 import { Card, Button } from "@mui/material";
 
@@ -13,7 +13,8 @@ export default function DetailPokemonPage() {
 
     const { data: pokemonData, loading, error, refetch, displayName } = usePokemon(id);
 
-    const { favorites, toggle } = useFavorites();
+    const favorites = useFavorites((s: FavoritesState) => s.favorites);
+    const toggle = useFavorites((s: FavoritesState) => s.toggle);
 
     const handleRefetch = useCallback(() => {
         refetch();

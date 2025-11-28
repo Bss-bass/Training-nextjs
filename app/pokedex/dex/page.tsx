@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button, TextField, Card } from "@mui/material";
-import { useFavorites } from '@/lib/context/FavoritesContext';
+import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
 import { usePokemonList } from "../hooks/usePokemon";
 
@@ -50,7 +50,8 @@ export default function Page() {
         }
     };
 
-    const { favorites, toggle } = useFavorites();
+    const favorites = useFavorites((s: FavoritesState) => s.favorites);
+    const toggle = useFavorites((s: FavoritesState) => s.toggle);
 
     return (
         <div className="min-h-screen p-6">

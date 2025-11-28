@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { useFavorites } from '@/lib/context/FavoritesContext';
+import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
 import { Button, TextField, Card } from "@mui/material";
 import { useTypesList, useTypeDetail } from "../hooks/usePokemon";
@@ -17,7 +17,8 @@ export default function TypesPage() {
 
     const typeQuery = useTypeDetail(selected);
 
-    const { favorites, toggle } = useFavorites();
+    const favorites = useFavorites((s: FavoritesState) => s.favorites);
+    const toggle = useFavorites((s: FavoritesState) => s.toggle);
 
     const types = typesQuery.data?.results ?? [];
     const typePokemon = typeQuery.data ?? null;
