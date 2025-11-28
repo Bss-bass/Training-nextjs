@@ -1,9 +1,9 @@
 'use client';
 
 import Link from "next/link";
-import SearchBar from "@/app/component/SearchBar";
+import SearchBar from "@/app/component/others/SearchBar";
 // import ProfessorTable from "@/app/component/ProfessorTable";
-import Table from "@/app/component/Table";
+import Table from "@/app/component/others/Table";
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from "react";
 

@@ -2,7 +2,8 @@
 import { usePokemonMultiple } from '../hooks/usePokemon';
 import Link from "next/link";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
-import { Card, Button } from "@mui/material";
+import { Card } from '@/app/component/ui/card';
+import { Button } from '@/app/component/ui/button';
 import Image from "next/image";
 
 type MiniPokemon = {
@@ -51,8 +52,8 @@ export default function TeamPage() {
 
                                 <Button
                                     onClick={() => removeId(f.id)}
-                                    variant="contained"
-                                    color='error'
+                                    variant="default"
+                                    className='bg-red-600 hover:bg-red-700 cursor-pointer'
                                 >
                                     Remove
                                 </Button>

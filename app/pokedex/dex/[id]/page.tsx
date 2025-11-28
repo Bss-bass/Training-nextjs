@@ -5,7 +5,8 @@ import { useCallback } from "react";
 import { usePokemon } from "../../hooks/usePokemon";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
-import { Card, Button } from "@mui/material";
+import { Card } from '@/app/component/ui/card';
+import { Button } from '@/app/component/ui/button';
 
 export default function DetailPokemonPage() {
     const params = useParams<{ id: string }>();
@@ -37,7 +38,7 @@ export default function DetailPokemonPage() {
                     <div className="flex flex-col items-center">
                         <div className="flex items-center gap-4">
                             <h1 className="text-4xl font-bold capitalize">{displayName}</h1>
-                            <Button onClick={() => pokemonData && toggle(pokemonData.id)} variant='contained' color={isFav ? 'error' : 'success'}>
+                            <Button onClick={() => pokemonData && toggle(pokemonData.id)} className={`${isFav ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white`}>
                                 {isFav ? 'Remove from Team' : 'Add to Team'}
                             </Button>
                         </div>
@@ -58,7 +59,7 @@ export default function DetailPokemonPage() {
                             <h2 className="text-2xl font-semibold mt-4 mb-2">Types</h2>
                             <div className="flex gap-2">
                                 {pokemonData.types.map((t: { type: { name: string } }) => (
-                                    <Card key={t.type.name} className="px-2 py-1" sx={{ bgcolor: 'var(--color-slate-200)' }}>{t.type.name}</Card>
+                                    <Card key={t.type.name} className="px-4 py-2">{t.type.name}</Card>
                                 ))}
                             </div>
 
@@ -72,7 +73,7 @@ export default function DetailPokemonPage() {
                             <h2 className="text-2xl font-semibold mt-4 mb-2">Stats</h2>
                             <ul className="pl-0 grid grid-cols-2 gap-2">
                                 {pokemonData.stats.map((s: { stat: { name: string }; base_stat: number }) => (
-                                    <Card key={s.stat.name} className="flex justify-between p-2" sx={{ bgcolor: 'var(--color-slate-50)', boxShadow: 'none' }}>
+                                    <Card key={s.stat.name} className="flex flex-row justify-between py-2 px-4">
                                         <span>{s.stat.name}</span>
                                         <span className="font-bold">{s.base_stat}</span>
                                     </Card>

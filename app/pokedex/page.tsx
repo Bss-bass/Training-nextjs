@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
+import { Card } from '@/app/component/ui/card';
 import Image from "next/image";
-import { Button } from '@mui/material';
-import ShuffleIcon from '@mui/icons-material/Shuffle';
+import { Button } from '@/app/component/ui/button';
 import { useExamplesQuery } from './hooks/usePokemon';
 
 export default function Page() {
@@ -21,25 +19,22 @@ export default function Page() {
             <div className="w-full max-w-6xl">
                 <section className="flex flex-col items-center gap-6 mb-8">
                     <Card className="p-6">
-                        <CardContent>
                             <h1 className="text-4xl font-extrabold mb-3">Pokedex — Explore Pokémon</h1>
                             <p className="text-lg text-slate-700 mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Minima nostrum eius voluptate voluptates, dolore laudantium cumque sunt quis rem ad soluta, dicta ratione? Dignissimos amet ducimus necessitatibus exercitationem sequi incidunt!</p>
                             <div className="flex gap-3">
-                                <Button variant='contained' color="primary">
+                                <Button className="bg-red-500 hover:bg-red-600">
                                     <Link href="/pokedex/dex">Open Pokédex</Link>
                                 </Button>
-                                <Button variant='contained' color="secondary">
+                                <Button className="bg-blue-500 hover:bg-blue-600">
                                     <Link href="/pokedex/types">Explore Types</Link>
                                 </Button>
-                                <Button variant='contained' color="success">
+                                <Button className="bg-green-500 hover:bg-green-600">
                                     <Link href="/pokedex/team">My Team</Link>
                                 </Button>
                             </div>
-                        </CardContent>
                     </Card>
 
                     <Card className="w-full md:w-1/2 p-6">
-                        <CardContent>
                             <h3 className="font-semibold mb-2">Random Pokémon</h3>
                             {loading && <p>Loading examples...</p>}
                             {error && <p className="text-red-600">Error: {error}</p>}
@@ -54,7 +49,7 @@ export default function Page() {
                                         )}
                                         <div className="capitalize font-medium">{p.name}</div>
                                         <div className="text-sm text-slate-600 mt-1 mb-2">{p.types.map((t) => t.type.name).join(', ')}</div>
-                                        <Button variant='outlined' color="info">
+                                        <Button variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-50">
                                             <Link href={`/pokedex/dex/${p.id}`}>View</Link>
                                         </Button>
                                     </article>
@@ -62,9 +57,8 @@ export default function Page() {
                             </div>
 
                             <div className="mt-3 flex justify-end">
-                                <Button onClick={() => examplesQuery.refetch()} variant="contained" endIcon={<ShuffleIcon />}>Shuffle</Button>
+                                <Button onClick={() => examplesQuery.refetch()}>Shuffle</Button>
                             </div>
-                        </CardContent>
                     </Card>
                 </section>
             </div>

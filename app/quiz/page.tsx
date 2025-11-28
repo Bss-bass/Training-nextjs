@@ -1,6 +1,6 @@
 'use client';
 
-import Quiz from "@/app/component/Quiz";
+import Quiz from "@/app/component/others/Quiz";
 import { useState } from "react";
 
 export default function Page() {

@@ -2,7 +2,9 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import { Button, TextField, Card } from "@mui/material";
+import { Button } from '@/app/component/ui/button';
+import { Input } from '@/app/component/ui/input';
+import { Card } from '@/app/component/ui/card';
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
 import { usePokemonList } from "../hooks/usePokemon";
@@ -57,12 +59,12 @@ export default function Page() {
         <div className="min-h-screen p-6">
             <h1 className="text-3xl font-bold mb-4">Pokédex</h1>
             <div className="mb-4 flex items-center justify-between">
-                <TextField id="outlined-basic" label="Search by name" variant="outlined" value={query} onChange={(e) => setQuery(e.target.value)} sx={{ minWidth: 400 }} />
+                <Input className="max-w-[400px] min-h-[60px]" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" />
                 <div className="flex gap-2">
-                    <Button variant="contained" color="secondary">
+                    <Button variant='outline' className="border-orange-600 text-orange-600 hover:text-black">
                         <Link href="/pokedex/types">Types</Link>
                     </Button>
-                    <Button variant="contained" color="success">
+                    <Button variant='outline' className="border-green-600 text-green-600 hover:text-black">
                         <Link href="/pokedex/team">Team</Link>
                     </Button>
                 </div>
@@ -81,7 +83,7 @@ export default function Page() {
                             const img = numericId ? `${artworkUrl}/${numericId}.png` : undefined;
                             const inTeam = numericId ? favorites.includes(numericId) : false;
                             return (
-                                <Card key={p.name} className={`bg-white/60 p-3 rounded shadow flex items-center gap-3 ${inTeam ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
+                                <Card key={p.name} className={`bg-white/60 p-3 rounded shadow flex items-center gap-3 flex-row ${inTeam ? 'border-2 border-emerald-500' : 'saturate-0'}`}>
                                     <div className="w-16 h-16 shrink-0">
                                         {img ? (
                                             <Image src={img} alt={p.name} width={64} height={64} className="mx-auto" />
@@ -94,7 +96,7 @@ export default function Page() {
                                         <div className="text-sm text-gray-500 mt-1">{inTeam ? <span className="text-emerald-600 font-semibold">In Team</span> : <span className="text-slate-500">Not in team</span>}</div>
                                     </div>
                                     <div>
-                                        <Button onClick={() => numericId && toggle(numericId)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
+                                        <Button onClick={() => numericId && toggle(numericId)} variant='outline' className="border-blue-500 text-blue-600">{inTeam ? 'Remove' : 'Add'}</Button>
                                     </div>
                                 </Card>
                             );
@@ -104,9 +106,9 @@ export default function Page() {
             )}
 
             <div className="flex gap-2 mt-6 justify-center">
-                <Button onClick={prevPage} variant="contained">Prev</Button>
+                <Button onClick={prevPage}>Prev</Button>
                 <span className="px-3 py-1">Page {page + 1}</span>
-                <Button onClick={nextPage} variant="contained">Next</Button>
+                <Button onClick={nextPage}>Next</Button>
             </div>
         </div>
     );

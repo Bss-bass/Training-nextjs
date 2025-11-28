@@ -4,7 +4,18 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useFavorites, FavoritesState } from '@/lib/stores/useFavorites';
 import Image from "next/image";
-import { Button, TextField, Card } from "@mui/material";
+import { Button } from '@/app/component/ui/button';
+import { Input } from '@/app/component/ui/input';
+import { Card } from '@/app/component/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+} from "@/app/component/ui/select";
 import { useTypesList, useTypeDetail } from "../hooks/usePokemon";
 import type { TypePokemonDetail } from "../hooks/usePokemon";
 
@@ -44,13 +55,19 @@ export default function TypesPage() {
             <div className="flex gap-4">
                 <div className="w-48">
                     <h2 className="font-semibold mb-2">All Types</h2>
-                    <ul className="space-y-1 bg-slate-200 rounded-md p-2">
-                        {types.map((t) => (
-                            <li key={t.name}>
-                                <button onClick={() => setSelected(t.name)} className={`capitalize text-left w-full cursor-pointer p-2 hover:bg-slate-300 rounded ${selected === t.name ? 'bg-slate-300 font-semibold' : ''}`}>{t.name}</button>
-                            </li>
-                        ))}
-                    </ul>
+                    <Select value={selected || undefined} onValueChange={(v) => setSelected(v)}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                                <SelectLabel>Types</SelectLabel>
+                                {types.map((t) => (
+                                    <SelectItem key={t.name} value={t.name} className="capitalize">{t.name}</SelectItem>
+                                ))}
+                            </SelectGroup>
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="flex-1">
@@ -58,7 +75,7 @@ export default function TypesPage() {
                     {loading && <p>Loading...</p>}
                     {!loading && typePokemon && (
                         <>
-                            <TextField  value={query} onChange={(e) => setQuery(e.target.value)} label="Search by name" sx={{ minWidth: 400 }} />
+                            <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search by name" className="max-w-[400px] min-h-[60px]" />
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
                                 {filteredTypePokemon?.pokemon.length === 0 ? (
                                     <p className="text-gray-500 text-sm">No Pokémon found for this type.</p>
@@ -84,7 +101,7 @@ export default function TypesPage() {
                                                         <div className="text-sm text-slate-600">{inTeam ? <span className="text-emerald-600 font-semibold">In Team</span> : <span className="text-slate-500">Not in team</span>}</div>
                                                     </div>
                                                     <div>
-                                                        <Button onClick={() => numericId && toggle(numericId)} variant="outlined">{inTeam ? 'Remove' : 'Add'}</Button>
+                                                        <Button onClick={() => numericId && toggle(numericId)} variant="outline" className="border-blue-500 text-blue-600">{inTeam ? 'Remove' : 'Add'}</Button>
                                                     </div>
                                                 </div>
                                             </Card>
